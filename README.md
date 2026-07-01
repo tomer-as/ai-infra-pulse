@@ -1,2 +1,48 @@
-# ai-infra-pulse
-AI monitoring system for global AI infrastructure
+AI Infra Pulse
+
+מערכת ניטור ואינטליגנציה לתשתית ה-AI העולמית (שבבים ומקררים לדאטה סנטרים).
+
+
+פרויקט אישי ללמידה ובניית תיק עבודות בתחום ארכיטקטורת מערכות AI.
+
+
+
+🎯 מטרת הפרויקט
+
+AI Infra Pulse עוקב אחרי תחום תשתית ה-AI העולמית דרך שני זרמי מידע מקבילים — מחירי מניות וחדשות — מעבד אותם בשכבת בינה מלאכותית, ומציג תובנות בדשבורד חי שמתעדכן יומית.
+
+המטרה אינה רק התוצר הסופי, אלא תהליך הבנייה עצמו: הבנת האופן שבו מערכות, ממשקים (APIs), שכבות אחסון, ושכבות בינה מלאכותית מתחברות זו לזו ליחידה פונקציונלית אחת.
+
+🏗️ ארכיטקטורה כללית
+
+המערכת בנויה מ-5 שכבות לוגיות:
+
+#שכבהתפקידטכנולוגיה1איסוףשליפת דאטה גולמיFinnhub API + Gumloop Web Search2ניטורבדיקת חוקיםGumloop Logic / Supabase Functions3העשרת AIסיכום וקישור אירועיםGumloop AI Agent4אחסוןשמירת דאטהSupabase (PostgreSQL)5תצוגהדשבורד חיReact + Vercel
+
+תיעוד מלא וטכני נמצא ב-/docs.
+
+🛠️ Stack טכנולוגי
+
+
+Database: Supabase (PostgreSQL)
+Data Source: Finnhub API (מחירי מניות)
+AI / Automation: Gumloop
+Frontend: React
+Hosting / CI-CD: Vercel
+Version Control: GitHub
+
+
+📁 מבנה הפרויקט
+
+/src                  קוד React של הדשבורד
+/docs                 תיעוד טכני מלא
+/docs/decisions       תיעוד החלטות ארכיטקטוניות (ADR)
+.env.example          תבנית למשתני סביבה (ללא סודות אמיתיים)
+
+🚀 סטטוס
+
+🔧 בבנייה — פרויקט לימודי פעיל.
+
+📌 הערה
+
+מפתחות API (Supabase, Finnhub) אינם נשמרים ב-repository זה. ראו .env.example להנחיות הגדרת משתני סביבה מקומיים.
