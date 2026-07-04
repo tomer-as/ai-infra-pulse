@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Infra Pulse</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@300;400;500;600&display=swap');
+
+    :root {
+      --bg: #0a0e1a;
+      --surface: #111827;
+      --border: #1f2937;
+      --accent: #00d4ff;
+      --accent-dim: rgba(0, 212, 255, 0.1);
+      --green: #10b981;
+      --red: #ef4444;
+      --yellow: #f59e0b;
+      --text: #e5e7eb;
+      --text-dim: #6b7280;
+      --mono: 'IBM Plex Mono', monospace;
+      --sans: 'Inter', sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      font-family: var(--mono);
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: -0.5px;
+    }
+
+    .logo span {
+      color: var(--text-dim);
+      font-weight: 400;
+    }
+
+    .status-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--text-dim);
+    }
+
+    .pulse {
+      width: 8px;
+      height: 8px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* Grid Layout */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    /* Price Cards */
+    .price-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .price-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: 0;
+      height: 2px;
+      background: var(--accent);
+      opacity: 0.3;
+    }
+
+    .price-card.up::before { background: var(--green); opacity: 0.8; }
+    .price-card.down::before { background: var(--red); opacity: 0.8; }
+
+    .ticker {
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 0.25rem;
+    }
+
+    .company {
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      margin-bottom: 1rem;
+    }
+
+    .price {
+      font-family: var(--mono);
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .change {
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .change.up { color: var(--green); }
+    .change.down { color: var(--red); }
+
+    /* Two Column Layout */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    /* Section Cards */
+    .section-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+    }
+
+    .section-title {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* Anomalies */
+    .anomaly-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .anomaly-item:last-child { border-bottom: none; }
+
+    .anomaly-left { display: flex; flex-direction: column; gap: 0.25rem; }
+
+    .anomaly-rule {
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .anomaly-time {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--text-dim);
+    }
+
+    .severity {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+    }
+
+    .severity.HIGH { background: rgba(239,68,68,0.15); color: var(--red); }
+    .severity.MEDIUM { background: rgba(245,158,11,0.15); color: var(--yellow); }
+    .severity.LOW { background: rgba(16,185,129,0.15); color: var(--green); }
+
+    /* News */
+    .news-item {
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .news-item:last-child { border-bottom: none; }
+
+    .news-headline {
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-bottom: 0.35rem;
+      line-height: 1.4;
+    }
+
+    .news-summary {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      line-height: 1.5;
+      margin-bottom: 0.35rem;
+    }
+
+    .news-meta {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    .news-ticker {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--accent);
+      background: var(--accent-dim);
+      padding: 0.1rem 0.4rem;
+      border-radius: 3px;
+    }
+
+    .news-date {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--text-dim);
+    }
+
+    /* Loading & Error */
+    .loading {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-dim);
+      font-family: var(--mono);
+      font-size: 0.85rem;
+    }
+
+    .error {
+      text-align: center;
+      padding: 1rem;
+      color: var(--red);
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      background: rgba(239,68,68,0.05);
+      border-radius: 6px;
+      border: 1px solid rgba(239,68,68,0.2);
+    }
+
+    /* Footer */
+    footer {
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    footer span {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--text-dim);
+    }
+
+    @media (max-width: 768px) {
+      .grid { grid-template-columns: repeat(2, 1fr); }
+      .two-col { grid-template-columns: 1fr; }
+      body { padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">AI Infra <span>Pulse</span></div>
+  <div class="status-bar">
+    <div class="pulse"></div>
+    <span id="last-updated">טוען נתונים...</span>
+  </div>
+</header>
+
+<!-- Price Cards -->
+<div class="grid" id="price-grid">
+  <div class="loading">טוען מחירים...</div>
+</div>
+
+<!-- Anomalies + News -->
+<div class="two-col">
+  <div class="section-card">
+    <div class="section-title">חריגות שזוהו</div>
+    <div id="anomalies-list"><div class="loading">טוען חריגות...</div></div>
+  </div>
+  <div class="section-card">
+    <div class="section-title">חדשות אחרונות</div>
+    <div id="news-list"><div class="loading">טוען חדשות...</div></div>
+  </div>
+</div>
+
+<footer>
+  <span>AI Infra Pulse — מערכת ניטור תשתיות AI</span>
+  <span id="footer-time"></span>
+</footer>
+
+<script>
+  const SUPABASE_URL = 'https://jdcpaooafklpkobdwelo.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpkY3Bhb29hZmtscGtvYmR3ZWxvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4ODk1MzIsImV4cCI6MjA5ODQ2NTUzMn0.jCA9LRWYDdu8NBbwWfOhILZNgeX194i7JODODCQ5Tws';
+
+  const COMPANIES = {
+    NVDA: 'NVIDIA Corporation',
+    TSM: 'Taiwan Semiconductor',
+    VRT: 'Vertiv Holdings',
+    EQIX: 'Equinix'
+  };
+
+  async function query(table, params = '') {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${params}`, {
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`
+      }
+    });
+    if (!res.ok) throw new Error(`שגיאה בטעינת ${table}`);
+    return res.json();
+  }
+
+  async function loadPrices() {
+    try {
+      const assets = await query('tracked_assets', 'select=*');
+      const prices = await query('price_snapshots', 'select=*&order=captured_at.desc&limit=8');
+
+      const latest = {};
+      prices.forEach(p => {
+        if (!latest[p.asset_id]) latest[p.asset_id] = p;
+      });
+
+      const grid = document.getElementById('price-grid');
+      grid.innerHTML = '';
+
+      assets.forEach(asset => {
+        const price = latest[asset.id];
+        if (!price) return;
+
+        const change = parseFloat(price.change_pct);
+        const dir = change >= 0 ? 'up' : 'down';
+        const arrow = change >= 0 ? '▲' : '▼';
+
+        grid.innerHTML += `
+          <div class="price-card ${dir}">
+            <div class="ticker">${asset.ticker}</div>
+            <div class="company">${asset.company_name}</div>
+            <div class="price">$${parseFloat(price.price).toFixed(2)}</div>
+            <div class="change ${dir}">${arrow} ${Math.abs(change).toFixed(2)}%</div>
+          </div>
+        `;
+      });
+
+      document.getElementById('last-updated').textContent =
+        'עדכון אחרון: ' + new Date(prices[0]?.captured_at).toLocaleString('he-IL');
+
+    } catch(e) {
+      document.getElementById('price-grid').innerHTML =
+        `<div class="error">${e.message}</div>`;
+    }
+  }
+
+  async function loadAnomalies() {
+    try {
+      const anomalies = await query('detected_anomalies',
+        'select=*&order=detected_at.desc&limit=10');
+      const assets = await query('tracked_assets', 'select=*');
+
+      const assetMap = {};
+      assets.forEach(a => assetMap[a.id] = a.ticker);
+
+      const list = document.getElementById('anomalies-list');
+
+      if (anomalies.length === 0) {
+        list.innerHTML = '<div class="loading">אין חריגות שזוהו</div>';
+        return;
+      }
+
+      list.innerHTML = anomalies.map(a => `
+        <div class="anomaly-item">
+          <div class="anomaly-left">
+            <div class="anomaly-rule">${assetMap[a.asset_id] || '—'} — ${a.rule_triggered}</div>
+            <div class="anomaly-time">${new Date(a.detected_at).toLocaleString('he-IL')}</div>
+          </div>
+          <div class="severity ${a.severity}">${a.severity}</div>
+        </div>
+      `).join('');
+
+    } catch(e) {
+      document.getElementById('anomalies-list').innerHTML =
+        `<div class="error">${e.message}</div>`;
+    }
+  }
+
+  async function loadNews() {
+    try {
+      const news = await query('news_items',
+        'select=*&order=published_at.desc&limit=5');
+
+      const list = document.getElementById('news-list');
+
+      if (news.length === 0) {
+        list.innerHTML = '<div class="loading">אין חדשות עדיין</div>';
+        return;
+      }
+
+      list.innerHTML = news.map(n => `
+        <div class="news-item">
+          <div class="news-headline">${n.headline}</div>
+          <div class="news-summary">${n.ai_summary || ''}</div>
+          <div class="news-meta">
+            ${(n.related_assets || '').split(',').map(t =>
+              `<span class="news-ticker">${t.trim()}</span>`
+            ).join('')}
+            <span class="news-date">${new Date(n.published_at).toLocaleDateString('he-IL')}</span>
+          </div>
+        </div>
+      `).join('');
+
+    } catch(e) {
+      document.getElementById('news-list').innerHTML =
+        `<div class="error">${e.message}</div>`;
+    }
+  }
+
+  document.getElementById('footer-time').textContent =
+    new Date().toLocaleString('he-IL');
+
+  loadPrices();
+  loadAnomalies();
+  loadNews();
+</script>
+
+</body>
+</html>
